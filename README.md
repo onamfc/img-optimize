@@ -20,7 +20,7 @@ A simple CLI tool for batch optimizing PNG and JPEG images while preserving qual
 
 ```bash
 # Clone the repository
-git clone https://github.com/KurtWeston/img-optimize.git
+git clone https://github.com/onamfc/img-optimize.git
 cd img-optimize
 
 # Install dependencies
@@ -32,16 +32,6 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-
-## Built With
-
-- python using click
-
-## Dependencies
-
-- `click`
-- `Pillow`
-- `rich`
 
 ## Contributing
 
