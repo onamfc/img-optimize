@@ -1,4 +1,4 @@
-# img-optimize
+# Image Optimizer
 
 A powerful CLI tool for batch optimizing PNG, JPEG, and WebP images with advanced features like parallel processing, resizing, and config file support.
 
