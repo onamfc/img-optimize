@@ -1,8 +1,9 @@
 """Tests for image optimizer."""
-import pytest
 from pathlib import Path
+
+import pytest
 from PIL import Image
-import io
+
 from img_optimize.optimizer import ImageOptimizer
 
 

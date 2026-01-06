@@ -1,14 +1,20 @@
 """CLI interface for img-optimize."""
-import click
-from pathlib import Path
-from rich.console import Console
-from .optimizer import ImageOptimizer
-from .utils import format_size, calculate_savings
-import logging
-import yaml
 import fnmatch
-from typing import List, Optional
+import logging
 import os
+from pathlib import Path
+from typing import List, Optional
+
+import click
+from rich.console import Console
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+from .optimizer import ImageOptimizer
+from .utils import calculate_savings, format_size
 
 console = Console()
 
@@ -22,6 +28,9 @@ def load_config(config_file: Optional[Path] = None) -> dict:
     Returns:
         Dictionary with configuration values
     """
+    if yaml is None:
+        return {}
+
     if config_file is None:
         # Search for .img-optimize.yaml in current directory
         config_file = Path.cwd() / '.img-optimize.yaml'
@@ -50,18 +59,47 @@ def should_skip(file_path: Path, skip_patterns: List[str]) -> bool:
 
 @click.command()
 @click.argument('input_dir', type=click.Path(exists=True, file_okay=False))
-@click.option('--output', '-o', type=click.Path(), help='Output directory (default: input_dir/optimized)')
-@click.option('--quality', '-q', default=85, type=click.IntRange(1, 100), help='JPEG/WebP quality (1-100, default: 85)')
+@click.option(
+    '--output', '-o', type=click.Path(), help='Output directory (default: input_dir/optimized)'
+)
+@click.option(
+    '--quality',
+    '-q',
+    default=85,
+    type=click.IntRange(1, 100),
+    help='JPEG/WebP quality (1-100, default: 85)',
+)
 @click.option('--recursive', '-r', is_flag=True, help='Process subdirectories recursively')
 @click.option('--dry-run', '-d', is_flag=True, help='Preview without saving files')
-@click.option('--in-place', '-i', is_flag=True, help='Optimize images in place (overwrite originals)')
+@click.option(
+    '--in-place', '-i', is_flag=True, help='Optimize images in place (overwrite originals)'
+)
 @click.option('--max-width', type=int, help='Maximum width in pixels (resize if larger)')
 @click.option('--max-height', type=int, help='Maximum height in pixels (resize if larger)')
-@click.option('--workers', '-w', default=1, type=int, help='Number of parallel workers (default: 1)')
+@click.option(
+    '--workers', '-w', default=1, type=int, help='Number of parallel workers (default: 1)'
+)
 @click.option('--log-file', type=click.Path(), help='Save detailed logs to file')
-@click.option('--skip', multiple=True, help='Skip files matching pattern (can be used multiple times)')
-@click.option('--config', type=click.Path(exists=True), help='Path to config file (.img-optimize.yaml)')
-def optimize(input_dir, output, quality, recursive, dry_run, in_place, max_width, max_height, workers, log_file, skip, config):
+@click.option(
+    '--skip', multiple=True, help='Skip files matching pattern (can be used multiple times)'
+)
+@click.option(
+    '--config', type=click.Path(exists=True), help='Path to config file (.img-optimize.yaml)'
+)
+def optimize(
+    input_dir,
+    output,
+    quality,
+    recursive,
+    dry_run,
+    in_place,
+    max_width,
+    max_height,
+    workers,
+    log_file,
+    skip,
+    config,
+):
     """Optimize PNG, JPEG, and WebP images in INPUT_DIR."""
     # Load config file
     cfg = load_config(Path(config) if config else None)
@@ -109,7 +147,16 @@ def optimize(input_dir, output, quality, recursive, dry_run, in_place, max_width
     pattern = '**/*' if recursive else '*'
 
     image_files = []
-    extensions = ['*.png', '*.PNG', '*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.webp', '*.WEBP']
+    extensions = [
+        '*.png',
+        '*.PNG',
+        '*.jpg',
+        '*.JPG',
+        '*.jpeg',
+        '*.JPEG',
+        '*.webp',
+        '*.WEBP',
+    ]
     for ext in extensions:
         found = input_path.glob(pattern.replace('*', ext))
         # Filter out skipped files

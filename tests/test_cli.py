@@ -1,8 +1,10 @@
 """Tests for CLI interface."""
+from pathlib import Path
+
 import pytest
 from click.testing import CliRunner
-from pathlib import Path
 from PIL import Image
+
 from img_optimize.cli import optimize
 
 

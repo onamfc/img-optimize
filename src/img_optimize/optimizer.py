@@ -1,14 +1,16 @@
 """Core image optimization logic."""
-from pathlib import Path
-from PIL import Image
-from rich.progress import track
-from rich.console import Console
-from .utils import format_size, calculate_savings
 import io
-import os
-from typing import Optional, Dict, List, Union
-from concurrent.futures import ProcessPoolExecutor, as_completed
 import logging
+import os
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+from PIL import Image
+from rich.console import Console
+from rich.progress import track
+
+from .utils import calculate_savings, format_size
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -102,7 +104,9 @@ class ImageOptimizer:
                 original_size = input_path.stat().st_size
 
                 if img.format not in SUPPORTED_FORMATS:
-                    logger.warning(f"Unsupported format: {img.format} for {input_path.name}")
+                    logger.warning(
+                        f"Unsupported format: {img.format} for {input_path.name}"
+                    )
                     return None
 
                 # Resize if needed
@@ -118,13 +122,16 @@ class ImageOptimizer:
                     exif = img.info.get('exif', b'')
                     if img.mode in ('RGBA', 'LA', 'P'):
                         img = img.convert('RGB')
-                    img.save(buffer, format='JPEG', quality=self.quality,
-                            optimize=True, exif=exif)
+                    img.save(
+                        buffer, format='JPEG', quality=self.quality, optimize=True, exif=exif
+                    )
 
                 optimized_size = buffer.tell()
 
                 if optimized_size >= original_size:
-                    console.print(f'[yellow]Skipped {input_path.name} (would increase size)[/yellow]')
+                    console.print(
+                        f'[yellow]Skipped {input_path.name} (would increase size)[/yellow]'
+                    )
                     return None
 
                 if not dry_run:
@@ -137,9 +144,11 @@ class ImageOptimizer:
                     os.utime(output_path, (stats.st_atime, stats.st_mtime))
 
                 savings = calculate_savings(original_size, optimized_size)
-                console.print(f'[green]✓[/green] {input_path.name}: '
-                            f'{format_size(original_size)} → {format_size(optimized_size)} '
-                            f'({savings:.1f}% saved)')
+                console.print(
+                    f'[green]✓[/green] {input_path.name}: '
+                    f'{format_size(original_size)} → {format_size(optimized_size)} '
+                    f'({savings:.1f}% saved)'
+                )
 
                 return {
                     'path': input_path,

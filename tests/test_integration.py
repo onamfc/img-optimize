@@ -1,10 +1,12 @@
 """Integration tests for end-to-end functionality."""
-import pytest
 from pathlib import Path
-from PIL import Image
-from click.testing import CliRunner
-from img_optimize.cli import optimize
+
+import pytest
 import yaml
+from click.testing import CliRunner
+from PIL import Image
+
+from img_optimize.cli import optimize
 
 
 @pytest.fixture
