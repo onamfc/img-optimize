@@ -1,4 +1,5 @@
 """Core image optimization logic."""
+
 import io
 import logging
 import os
@@ -16,7 +17,7 @@ console = Console()
 logger = logging.getLogger(__name__)
 
 # Supported image formats (PIL reports these format names)
-SUPPORTED_FORMATS = ['PNG', 'JPEG', 'WEBP', 'MPO']  # MPO is multi-picture JPEG
+SUPPORTED_FORMATS = ["PNG", "JPEG", "WEBP", "MPO"]  # MPO is multi-picture JPEG
 
 
 class ImageOptimizer:
@@ -34,7 +35,7 @@ class ImageOptimizer:
         quality: int = 85,
         max_width: Optional[int] = None,
         max_height: Optional[int] = None,
-        workers: int = 1
+        workers: int = 1,
     ) -> None:
         """Initialize the image optimizer.
 
@@ -48,7 +49,7 @@ class ImageOptimizer:
         self.max_width = max_width
         self.max_height = max_height
         self.workers = workers
-    
+
     def _resize_if_needed(self, img: Image.Image) -> Image.Image:
         """Resize image if it exceeds max dimensions.
 
@@ -81,10 +82,7 @@ class ImageOptimizer:
         return img
 
     def optimize_image(
-        self,
-        input_path: Path,
-        output_path: Path,
-        dry_run: bool = False
+        self, input_path: Path, output_path: Path, dry_run: bool = False
     ) -> Optional[Dict[str, Union[Path, int]]]:
         """Optimize a single image file.
 
@@ -115,9 +113,7 @@ class ImageOptimizer:
                         img_format = "JPEG"
 
                 if img_format not in SUPPORTED_FORMATS:
-                    logger.warning(
-                        f"Unsupported format: {img_format} for {input_path.name}"
-                    )
+                    logger.warning(f"Unsupported format: {img_format} for {input_path.name}")
                     return None
 
                 # Resize if needed
@@ -175,13 +171,9 @@ class ImageOptimizer:
             console.print(f"[red]✗[/red] {input_path.name}: {str(e)}")
             logger.error(f"Error optimizing {input_path}: {e}", exc_info=True)
             return None
-    
+
     def process_batch(
-        self,
-        image_files: List[Path],
-        output_dir: Path,
-        input_dir: Path,
-        dry_run: bool = False
+        self, image_files: List[Path], output_dir: Path, input_dir: Path, dry_run: bool = False
     ) -> List[Dict[str, Union[Path, int]]]:
         """Process multiple images with progress tracking.
 
@@ -203,9 +195,7 @@ class ImageOptimizer:
                 for img_path in image_files:
                     rel_path = img_path.relative_to(input_dir)
                     output_path = output_dir / rel_path
-                    future = executor.submit(
-                        self.optimize_image, img_path, output_path, dry_run
-                    )
+                    future = executor.submit(self.optimize_image, img_path, output_path, dry_run)
                     futures[future] = img_path
 
                 for future in track(

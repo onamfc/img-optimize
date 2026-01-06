@@ -64,9 +64,7 @@ class TestCLIIntegration:
         output_dir = tmp_path / "custom_output"
 
         runner = CliRunner()
-        result = runner.invoke(
-            optimize, [str(sample_images_dir), "--output", str(output_dir)]
-        )
+        result = runner.invoke(optimize, [str(sample_images_dir), "--output", str(output_dir)])
 
         assert result.exit_code == 0
         assert output_dir.exists()
@@ -155,9 +153,7 @@ class TestCLIIntegration:
             yaml.dump(config_data, f)
 
         runner = CliRunner()
-        result = runner.invoke(
-            optimize, [str(sample_images_dir), "--config", str(config_path)]
-        )
+        result = runner.invoke(optimize, [str(sample_images_dir), "--config", str(config_path)])
 
         assert result.exit_code == 0
 
@@ -166,9 +162,7 @@ class TestCLIIntegration:
         log_path = tmp_path / "optimize.log"
 
         runner = CliRunner()
-        result = runner.invoke(
-            optimize, [str(sample_images_dir), "--log-file", str(log_path)]
-        )
+        result = runner.invoke(optimize, [str(sample_images_dir), "--log-file", str(log_path)])
 
         assert result.exit_code == 0
         assert log_path.exists()
@@ -255,6 +249,4 @@ class TestWebPFormat:
         else:
             # File might have been skipped if optimization would increase size
             # Check that the command at least ran successfully
-            assert (
-                "images to process" in result.output or "No image files" in result.output
-            )
+            assert "images to process" in result.output or "No image files" in result.output

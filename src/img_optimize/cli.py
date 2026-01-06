@@ -1,4 +1,5 @@
 """CLI interface for img-optimize."""
+
 import fnmatch
 import logging
 import os
@@ -33,7 +34,7 @@ def load_config(config_file: Optional[Path] = None) -> dict:
 
     if config_file is None:
         # Search for .img-optimize.yaml in current directory
-        config_file = Path.cwd() / '.img-optimize.yaml'
+        config_file = Path.cwd() / ".img-optimize.yaml"
 
     if config_file and config_file.exists():
         with open(config_file) as f:
@@ -52,9 +53,7 @@ def should_skip(file_path: Path, skip_patterns: List[str]) -> bool:
         True if file should be skipped
     """
     for pattern in skip_patterns:
-        if fnmatch.fnmatch(str(file_path), pattern) or fnmatch.fnmatch(
-            file_path.name, pattern
-        ):
+        if fnmatch.fnmatch(str(file_path), pattern) or fnmatch.fnmatch(file_path.name, pattern):
             return True
     return False
 
@@ -74,9 +73,7 @@ def should_skip(file_path: Path, skip_patterns: List[str]) -> bool:
     type=click.IntRange(1, 100),
     help="JPEG/WebP quality (1-100, default: 85)",
 )
-@click.option(
-    "--recursive", "-r", is_flag=True, help="Process subdirectories recursively"
-)
+@click.option("--recursive", "-r", is_flag=True, help="Process subdirectories recursively")
 @click.option("--dry-run", "-d", is_flag=True, help="Preview without saving files")
 @click.option(
     "--in-place",
@@ -85,9 +82,7 @@ def should_skip(file_path: Path, skip_patterns: List[str]) -> bool:
     help="Optimize images in place (overwrite originals)",
 )
 @click.option("--max-width", type=int, help="Maximum width in pixels (resize if larger)")
-@click.option(
-    "--max-height", type=int, help="Maximum height in pixels (resize if larger)"
-)
+@click.option("--max-height", type=int, help="Maximum height in pixels (resize if larger)")
 @click.option(
     "--workers",
     "-w",
@@ -127,11 +122,11 @@ def optimize(
     input_path = Path(input_dir)
 
     # Merge CLI options with config (CLI takes precedence)
-    quality = quality if quality != 85 else cfg.get('quality', 85)
-    max_width = max_width or cfg.get('max_width')
-    max_height = max_height or cfg.get('max_height')
-    workers = workers if workers != 1 else cfg.get('workers', 1)
-    skip_patterns = list(skip) if skip else cfg.get('skip', [])
+    quality = quality if quality != 85 else cfg.get("quality", 85)
+    max_width = max_width or cfg.get("max_width")
+    max_height = max_height or cfg.get("max_height")
+    workers = workers if workers != 1 else cfg.get("workers", 1)
+    skip_patterns = list(skip) if skip else cfg.get("skip", [])
 
     # Setup logging
     if log_file:
@@ -158,9 +153,7 @@ def optimize(
     # Handle in-place optimization
     if in_place:
         if output:
-            console.print(
-                "[red]Error: --in-place and --output cannot be used together[/red]"
-            )
+            console.print("[red]Error: --in-place and --output cannot be used together[/red]")
             return
         output_path = input_path
     else:
@@ -170,10 +163,7 @@ def optimize(
         output_path.mkdir(parents=True, exist_ok=True)
 
     optimizer = ImageOptimizer(
-        quality=quality,
-        max_width=max_width,
-        max_height=max_height,
-        workers=workers
+        quality=quality, max_width=max_width, max_height=max_height, workers=workers
     )
     image_files = []
     extensions = [
@@ -204,9 +194,7 @@ def optimize(
     if dry_run:
         console.print("[yellow]DRY RUN MODE - No files will be saved[/yellow]\n")
     if in_place:
-        console.print(
-            "[yellow]IN-PLACE MODE - Original files will be overwritten[/yellow]\n"
-        )
+        console.print("[yellow]IN-PLACE MODE - Original files will be overwritten[/yellow]\n")
     if workers > 1:
         console.print(f"[cyan]Using {workers} parallel workers[/cyan]\n")
 

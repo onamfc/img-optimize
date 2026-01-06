@@ -36,9 +36,7 @@ class TestCLI:
         runner = CliRunner()
         output_dir = tmp_path / "custom_output"
 
-        result = runner.invoke(
-            optimize, [str(test_images_dir), "--output", str(output_dir)]
-        )
+        result = runner.invoke(optimize, [str(test_images_dir), "--output", str(output_dir)])
 
         assert result.exit_code == 0
         assert output_dir.exists()
