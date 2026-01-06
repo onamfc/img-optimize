@@ -2,7 +2,6 @@
 
 import fnmatch
 import logging
-import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -204,7 +203,7 @@ def optimize(
     total_optimized = sum(r["optimized_size"] for r in results)
     total_saved = total_original - total_optimized
 
-    console.print(f"\n[bold green]Summary:[/bold green]")
+    console.print("\n[bold green]Summary:[/bold green]")
     console.print(f"Processed: {len(results)} images")
     console.print(f"Total original size: {format_size(total_original)}")
     console.print(f"Total optimized size: {format_size(total_optimized)}")

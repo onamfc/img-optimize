@@ -1,7 +1,5 @@
 """Tests for image optimizer."""
 
-from pathlib import Path
-
 import pytest
 from PIL import Image
 
@@ -117,7 +115,7 @@ class TestImageOptimizer:
         optimizer = ImageOptimizer(max_width=1000)
         output_path = output_dir / "resized_width.jpg"
 
-        result = optimizer.optimize_image(img_path, output_path, dry_run=False)
+        optimizer.optimize_image(img_path, output_path, dry_run=False)
 
         with Image.open(output_path) as resized:
             assert resized.width == 1000
@@ -169,7 +167,7 @@ class TestImageOptimizer:
         img.save(img_path, format="JPEG", quality=100)
 
         optimizer = ImageOptimizer()
-        results = optimizer.process_batch([img_path], output_dir, tmp_path, dry_run=False)
+        optimizer.process_batch([img_path], output_dir, tmp_path, dry_run=False)
 
         # Check that subdirectory was created in output
         expected_output = output_dir / "subdir" / "nested.jpg"

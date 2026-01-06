@@ -1,7 +1,5 @@
 """Integration tests for end-to-end functionality."""
 
-from pathlib import Path
-
 import pytest
 import yaml
 from click.testing import CliRunner
@@ -72,8 +70,6 @@ class TestCLIIntegration:
 
     def test_in_place_optimization(self, sample_images_dir):
         """Test in-place optimization."""
-        original_size = (sample_images_dir / "photo.jpg").stat().st_size
-
         runner = CliRunner()
         result = runner.invoke(optimize, [str(sample_images_dir), "--in-place"])
 

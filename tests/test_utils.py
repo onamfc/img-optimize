@@ -1,7 +1,5 @@
 """Tests for utility functions."""
 
-import pytest
-
 from img_optimize.utils import calculate_savings, format_size
 
 

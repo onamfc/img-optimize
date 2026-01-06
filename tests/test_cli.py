@@ -1,7 +1,5 @@
 """Tests for CLI interface."""
 
-from pathlib import Path
-
 import pytest
 from click.testing import CliRunner
 from PIL import Image
