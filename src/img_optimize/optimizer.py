@@ -15,8 +15,8 @@ from .utils import calculate_savings, format_size
 console = Console()
 logger = logging.getLogger(__name__)
 
-# Supported image formats
-SUPPORTED_FORMATS = ['PNG', 'JPEG', 'WEBP']
+# Supported image formats (PIL reports these format names)
+SUPPORTED_FORMATS = ['PNG', 'JPEG', 'WEBP', 'MPO']  # MPO is multi-picture JPEG
 
 
 class ImageOptimizer:
@@ -103,9 +103,20 @@ class ImageOptimizer:
             with Image.open(input_path) as img:
                 original_size = input_path.stat().st_size
 
-                if img.format not in SUPPORTED_FORMATS:
+                # Determine format from file extension if PIL doesn't detect it
+                img_format = img.format
+                if not img_format:
+                    ext = input_path.suffix.lower()
+                    if ext in ['.webp']:
+                        img_format = 'WEBP'
+                    elif ext in ['.png']:
+                        img_format = 'PNG'
+                    elif ext in ['.jpg', '.jpeg']:
+                        img_format = 'JPEG'
+
+                if img_format not in SUPPORTED_FORMATS:
                     logger.warning(
-                        f"Unsupported format: {img.format} for {input_path.name}"
+                        f"Unsupported format: {img_format} for {input_path.name}"
                     )
                     return None
 
@@ -114,11 +125,11 @@ class ImageOptimizer:
 
                 buffer = io.BytesIO()
 
-                if img.format == 'PNG':
+                if img_format == 'PNG':
                     img.save(buffer, format='PNG', optimize=True)
-                elif img.format == 'WEBP':
+                elif img_format == 'WEBP':
                     img.save(buffer, format='WEBP', quality=self.quality, method=6)
-                else:  # JPEG
+                else:  # JPEG or MPO
                     exif = img.info.get('exif', b'')
                     if img.mode in ('RGBA', 'LA', 'P'):
                         img = img.convert('RGB')

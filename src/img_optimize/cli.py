@@ -113,14 +113,23 @@ def optimize(
 
     # Setup logging
     if log_file:
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler()
-            ]
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(
+            logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         )
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.WARNING)
+
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.DEBUG)
+        root_logger.addHandler(file_handler)
+        root_logger.addHandler(stream_handler)
+
+        # Log initial message to ensure file is created with content
+        logger = logging.getLogger(__name__)
+        logger.info(f"Starting optimization of {input_path}")
     else:
         logging.basicConfig(level=logging.WARNING)
 
@@ -144,8 +153,6 @@ def optimize(
         max_height=max_height,
         workers=workers
     )
-    pattern = '**/*' if recursive else '*'
-
     image_files = []
     extensions = [
         '*.png',
@@ -157,8 +164,13 @@ def optimize(
         '*.webp',
         '*.WEBP',
     ]
+
     for ext in extensions:
-        found = input_path.glob(pattern.replace('*', ext))
+        if recursive:
+            pattern = f'**/{ext}'
+        else:
+            pattern = ext
+        found = input_path.glob(pattern)
         # Filter out skipped files
         image_files.extend([f for f in found if not should_skip(f, skip_patterns)])
 
