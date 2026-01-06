@@ -1,4 +1,5 @@
 """Tests for image optimizer."""
+
 from pathlib import Path
 
 import pytest
@@ -11,8 +12,8 @@ from img_optimize.optimizer import ImageOptimizer
 def temp_image(tmp_path):
     """Create a temporary test image."""
     img_path = tmp_path / "test.jpg"
-    img = Image.new('RGB', (100, 100), color='red')
-    img.save(img_path, format='JPEG', quality=100)
+    img = Image.new("RGB", (100, 100), color="red")
+    img.save(img_path, format="JPEG", quality=100)
     return img_path
 
 
@@ -20,8 +21,8 @@ def temp_image(tmp_path):
 def temp_png(tmp_path):
     """Create a temporary PNG image."""
     img_path = tmp_path / "test.png"
-    img = Image.new('RGB', (100, 100), color='blue')
-    img.save(img_path, format='PNG')
+    img = Image.new("RGB", (100, 100), color="blue")
+    img.save(img_path, format="PNG")
     return img_path
 
 
@@ -91,8 +92,8 @@ class TestImageOptimizer:
         """Test that images are resized when max dimensions are set."""
         # Create a large image
         img_path = tmp_path / "large.jpg"
-        img = Image.new('RGB', (2000, 1500), color='red')
-        img.save(img_path, format='JPEG', quality=95)
+        img = Image.new("RGB", (2000, 1500), color="red")
+        img.save(img_path, format="JPEG", quality=95)
 
         optimizer = ImageOptimizer(quality=85, max_width=1000, max_height=1000)
         output_path = output_dir / "resized.jpg"
@@ -110,8 +111,8 @@ class TestImageOptimizer:
     def test_max_width_only(self, tmp_path, output_dir):
         """Test resize with only max_width set."""
         img_path = tmp_path / "wide.jpg"
-        img = Image.new('RGB', (2000, 1000), color='blue')
-        img.save(img_path, format='JPEG', quality=95)
+        img = Image.new("RGB", (2000, 1000), color="blue")
+        img.save(img_path, format="JPEG", quality=95)
 
         optimizer = ImageOptimizer(max_width=1000)
         output_path = output_dir / "resized_width.jpg"
@@ -128,8 +129,8 @@ class TestImageOptimizer:
         image_files = []
         for i in range(5):
             img_path = tmp_path / f"test_{i}.jpg"
-            img = Image.new('RGB', (100, 100), color='red')
-            img.save(img_path, format='JPEG', quality=100)
+            img = Image.new("RGB", (100, 100), color="red")
+            img.save(img_path, format="JPEG", quality=100)
             image_files.append(img_path)
 
         optimizer = ImageOptimizer(quality=85, workers=2)
@@ -141,9 +142,9 @@ class TestImageOptimizer:
         """Test WebP image optimization."""
         # Create a WebP image with low quality so optimization can reduce size
         img_path = tmp_path / "test.webp"
-        img = Image.new('RGB', (200, 200), color='green')
+        img = Image.new("RGB", (200, 200), color="green")
         # Save with lower quality so optimization can actually reduce the file size
-        img.save(img_path, format='WEBP', quality=95, method=0)
+        img.save(img_path, format="WEBP", quality=95, method=0)
 
         optimizer = ImageOptimizer(quality=75)
         output_path = output_dir / "optimized.webp"
@@ -164,8 +165,8 @@ class TestImageOptimizer:
         subdir.mkdir()
 
         img_path = subdir / "nested.jpg"
-        img = Image.new('RGB', (50, 50), color='yellow')
-        img.save(img_path, format='JPEG', quality=100)
+        img = Image.new("RGB", (50, 50), color="yellow")
+        img.save(img_path, format="JPEG", quality=100)
 
         optimizer = ImageOptimizer()
         results = optimizer.process_batch([img_path], output_dir, tmp_path, dry_run=False)
