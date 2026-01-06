@@ -1,0 +1,42 @@
+# Example configuration file for img-optimize
+# Copy this file to .img-optimize.yaml and customize for your project
+
+# Quality setting for JPEG and WebP compression (1-100)
+# Higher = better quality but larger files
+quality: 85
+
+# Maximum image dimensions (pixels)
+# Images larger than these will be resized while maintaining aspect ratio
+# Omit or set to null to disable resizing
+max_width: 2000
+max_height: 2000
+
+# Number of parallel workers for batch processing
+# Set to 1 for sequential processing
+# Higher values use more CPU but process faster
+workers: 4
+
+# Patterns to skip during optimization
+# Supports glob patterns and wildcards
+skip:
+  - "*.draft.*"          # Skip any files with .draft in the name
+  - "*/temp/*"           # Skip files in temp directories
+  - "*/backup/*"         # Skip files in backup directories
+  - "*-original.*"       # Skip files ending with -original
+  - "*.thumbnail.*"      # Skip thumbnail files
+
+# Example: Minimal config for web optimization
+# quality: 80
+# max_width: 1920
+# workers: 4
+
+# Example: High quality photo archiving
+# quality: 95
+# max_width: null
+# max_height: null
+# workers: 8
+
+# Example: Fast processing with aggressive compression
+# quality: 70
+# max_width: 1200
+# workers: 8

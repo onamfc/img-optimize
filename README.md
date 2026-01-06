@@ -1,20 +1,30 @@
 # img-optimize
 
-A simple CLI tool for batch optimizing PNG and JPEG images while preserving quality
+A powerful CLI tool for batch optimizing PNG, JPEG, and WebP images with advanced features like parallel processing, resizing, and config file support.
 
 ## Features
 
-- Batch process all PNG and JPEG files in a specified directory
-- Compress images with configurable quality levels (default: 85 for JPEG, optimize for PNG)
-- Preserve original EXIF metadata and file timestamps
-- Display compression statistics: original size, optimized size, and percentage saved
-- Create optimized files in output directory (preserving original files)
-- Show progress bar for batch operations using rich library
-- Support recursive directory processing with --recursive flag
-- Dry-run mode to preview compression results without saving files
-- Summary report showing total space saved across all processed images
-- Skip already optimized files that would increase in size
-- Colorized terminal output for better readability
+### Core Functionality
+- **Multiple format support**: PNG, JPEG, and WebP optimization
+- **Parallel processing**: Use multiple CPU cores for faster batch operations
+- **Smart resizing**: Automatically resize images that exceed maximum dimensions
+- **In-place optimization**: Overwrite originals or create copies in a separate directory
+- **Recursive processing**: Handle nested directory structures with preserved hierarchy
+- **Config file support**: Set project-specific defaults with `.img-optimize.yaml`
+
+### Quality & Preservation
+- Configurable quality levels (default: 85 for JPEG/WebP)
+- Preserve original EXIF metadata
+- Maintain file timestamps
+- Skip files that would increase in size after optimization
+
+### Developer Experience
+- Dry-run mode to preview optimizations without saving
+- Detailed logging with `--log-file` option
+- Skip patterns to exclude specific files or directories
+- Rich progress bars and colorized terminal output
+- Comprehensive statistics and summary reports
+- Type hints throughout for better IDE support
 
 ## Requirements
 
@@ -62,7 +72,7 @@ img-optimize /path/to/images
 # Specify custom output directory
 img-optimize /path/to/images --output /path/to/output
 
-# Set JPEG quality (1-100, default: 85)
+# Set JPEG/WebP quality (1-100, default: 85)
 img-optimize /path/to/images --quality 90
 
 # Process subdirectories recursively
@@ -71,18 +81,45 @@ img-optimize /path/to/images --recursive
 # Preview compression without saving files (dry-run)
 img-optimize /path/to/images --dry-run
 
-# Combine options
-img-optimize /path/to/images -o ./compressed -q 80 -r
+# Optimize in-place (overwrite originals)
+img-optimize /path/to/images --in-place
+
+# Resize large images during optimization
+img-optimize /path/to/images --max-width 1920 --max-height 1080
+
+# Use parallel processing for faster optimization
+img-optimize /path/to/images --workers 4
+
+# Skip specific files or patterns
+img-optimize /path/to/images --skip "*.draft.*" --skip "*/temp/*"
+
+# Save detailed logs to file
+img-optimize /path/to/images --log-file optimize.log
+
+# Use a config file for project defaults
+img-optimize /path/to/images --config .img-optimize.yaml
+
+# Combine multiple options
+img-optimize ./photos -o ./compressed -q 80 -r -w 4 --max-width 2000
 ```
 
 ### Command-Line Options
 
-- `INPUT_DIR` - Directory containing images to optimize (required)
-- `-o, --output` - Output directory (default: INPUT_DIR/optimized)
-- `-q, --quality` - JPEG quality level from 1-100 (default: 85)
-- `-r, --recursive` - Process subdirectories recursively
-- `-d, --dry-run` - Preview results without saving files
-- `--help` - Show help message
+| Option | Description |
+|--------|-------------|
+| `INPUT_DIR` | Directory containing images to optimize (required) |
+| `-o, --output` | Output directory (default: INPUT_DIR/optimized) |
+| `-q, --quality` | JPEG/WebP quality level 1-100 (default: 85) |
+| `-r, --recursive` | Process subdirectories recursively |
+| `-d, --dry-run` | Preview results without saving files |
+| `-i, --in-place` | Optimize images in place (overwrite originals) |
+| `--max-width` | Maximum width in pixels (resize if larger) |
+| `--max-height` | Maximum height in pixels (resize if larger) |
+| `-w, --workers` | Number of parallel workers (default: 1) |
+| `--skip` | Skip files matching pattern (can be used multiple times) |
+| `--log-file` | Save detailed logs to file |
+| `--config` | Path to config file (.img-optimize.yaml) |
+| `--help` | Show help message |
 
 ### Examples
 
@@ -95,12 +132,46 @@ img-optimize ./images --recursive
 
 # Test optimization without modifying files
 img-optimize ./test-images --dry-run
+
+# Optimize in place with 4 parallel workers
+img-optimize ./photos --in-place --workers 4
+
+# Resize and optimize for web (max 1920px wide)
+img-optimize ./raw-photos --max-width 1920 --quality 85
+
+# Skip draft files and temporary folders
+img-optimize ./project --skip "*.draft.*" --skip "*/temp/*" --recursive
+
+# Use config file for consistent settings
+img-optimize ./photos --config .img-optimize.yaml
+```
+
+### Configuration File
+
+Create a `.img-optimize.yaml` file in your project directory for default settings:
+
+```yaml
+# .img-optimize.yaml
+quality: 85
+max_width: 2000
+max_height: 2000
+workers: 4
+skip:
+  - "*.draft.*"
+  - "*/temp/*"
+  - "*/backup/*"
+```
+
+Then simply run:
+```bash
+img-optimize ./images --recursive
 ```
 
 ## Supported Formats
 
 - PNG (.png, .PNG)
 - JPEG (.jpg, .jpeg, .JPG, .JPEG)
+- WebP (.webp, .WEBP)
 
 ## Development
 

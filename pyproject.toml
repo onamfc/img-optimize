@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "img-optimize"
-version = "1.0.0"
-description = "A CLI tool for batch optimizing PNG and JPEG images"
+version = "2.0.0"
+description = "A CLI tool for batch optimizing PNG, JPEG, and WebP images with advanced features"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -27,12 +27,17 @@ dependencies = [
     "click>=8.0.0",
     "Pillow>=9.0.0",
     "rich>=12.0.0",
+    "PyYAML>=6.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=3.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
 ]
 
 [project.scripts]

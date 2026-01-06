@@ -33,3 +33,21 @@ class TestCalculateSavings:
     def test_high_savings(self):
         result = calculate_savings(1000, 100)
         assert result == 90.0
+
+    def test_complete_savings(self):
+        """Test 100% savings (file reduced to 0)."""
+        assert calculate_savings(1000, 0) == 100.0
+
+    def test_fractional_savings(self):
+        """Test savings with fractional percentages."""
+        result = calculate_savings(1000, 750)
+        assert result == 25.0
+
+    def test_terabytes(self):
+        """Test formatting terabytes."""
+        assert "TB" in format_size(1099511627776)  # 1 TB
+
+    def test_float_input(self):
+        """Test that float inputs are handled correctly."""
+        result = format_size(1536.5)
+        assert "KB" in result

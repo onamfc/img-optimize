@@ -18,3 +18,10 @@ venv/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Config files (but not example)
+.img-optimize.yaml
