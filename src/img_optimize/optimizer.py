@@ -117,7 +117,7 @@ class ImageOptimizer:
                     return None
 
                 # Resize if needed
-                img = self._resize_if_needed(img)
+                img = self._resize_if_needed(img)  # type: ignore[assignment]
 
                 buffer = io.BytesIO()
 
@@ -128,7 +128,7 @@ class ImageOptimizer:
                 else:  # JPEG or MPO
                     exif = img.info.get("exif", b"")
                     if img.mode in ("RGBA", "LA", "P"):
-                        img = img.convert("RGB")
+                        img = img.convert("RGB")  # type: ignore[assignment]
                     img.save(
                         buffer,
                         format="JPEG",
