@@ -104,6 +104,8 @@ def optimize(
     # Load config file
     cfg = load_config(Path(config) if config else None)
 
+    input_path = Path(input_dir)
+
     # Merge CLI options with config (CLI takes precedence)
     quality = quality if quality != 85 else cfg.get('quality', 85)
     max_width = max_width or cfg.get('max_width')
@@ -132,8 +134,6 @@ def optimize(
         logger.info(f"Starting optimization of {input_path}")
     else:
         logging.basicConfig(level=logging.WARNING)
-
-    input_path = Path(input_dir)
 
     # Handle in-place optimization
     if in_place:
