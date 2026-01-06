@@ -52,39 +52,59 @@ def should_skip(file_path: Path, skip_patterns: List[str]) -> bool:
         True if file should be skipped
     """
     for pattern in skip_patterns:
-        if fnmatch.fnmatch(str(file_path), pattern) or fnmatch.fnmatch(file_path.name, pattern):
+        if fnmatch.fnmatch(str(file_path), pattern) or fnmatch.fnmatch(
+            file_path.name, pattern
+        ):
             return True
     return False
 
 
 @click.command()
-@click.argument('input_dir', type=click.Path(exists=True, file_okay=False))
+@click.argument("input_dir", type=click.Path(exists=True, file_okay=False))
 @click.option(
-    '--output', '-o', type=click.Path(), help='Output directory (default: input_dir/optimized)'
+    "--output",
+    "-o",
+    type=click.Path(),
+    help="Output directory (default: input_dir/optimized)",
 )
 @click.option(
-    '--quality',
-    '-q',
+    "--quality",
+    "-q",
     default=85,
     type=click.IntRange(1, 100),
-    help='JPEG/WebP quality (1-100, default: 85)',
-)
-@click.option('--recursive', '-r', is_flag=True, help='Process subdirectories recursively')
-@click.option('--dry-run', '-d', is_flag=True, help='Preview without saving files')
-@click.option(
-    '--in-place', '-i', is_flag=True, help='Optimize images in place (overwrite originals)'
-)
-@click.option('--max-width', type=int, help='Maximum width in pixels (resize if larger)')
-@click.option('--max-height', type=int, help='Maximum height in pixels (resize if larger)')
-@click.option(
-    '--workers', '-w', default=1, type=int, help='Number of parallel workers (default: 1)'
-)
-@click.option('--log-file', type=click.Path(), help='Save detailed logs to file')
-@click.option(
-    '--skip', multiple=True, help='Skip files matching pattern (can be used multiple times)'
+    help="JPEG/WebP quality (1-100, default: 85)",
 )
 @click.option(
-    '--config', type=click.Path(exists=True), help='Path to config file (.img-optimize.yaml)'
+    "--recursive", "-r", is_flag=True, help="Process subdirectories recursively"
+)
+@click.option("--dry-run", "-d", is_flag=True, help="Preview without saving files")
+@click.option(
+    "--in-place",
+    "-i",
+    is_flag=True,
+    help="Optimize images in place (overwrite originals)",
+)
+@click.option("--max-width", type=int, help="Maximum width in pixels (resize if larger)")
+@click.option(
+    "--max-height", type=int, help="Maximum height in pixels (resize if larger)"
+)
+@click.option(
+    "--workers",
+    "-w",
+    default=1,
+    type=int,
+    help="Number of parallel workers (default: 1)",
+)
+@click.option("--log-file", type=click.Path(), help="Save detailed logs to file")
+@click.option(
+    "--skip",
+    multiple=True,
+    help="Skip files matching pattern (can be used multiple times)",
+)
+@click.option(
+    "--config",
+    type=click.Path(exists=True),
+    help="Path to config file (.img-optimize.yaml)",
 )
 def optimize(
     input_dir,
@@ -118,7 +138,7 @@ def optimize(
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(
-            logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
 
         stream_handler = logging.StreamHandler()
@@ -138,11 +158,13 @@ def optimize(
     # Handle in-place optimization
     if in_place:
         if output:
-            console.print('[red]Error: --in-place and --output cannot be used together[/red]')
+            console.print(
+                "[red]Error: --in-place and --output cannot be used together[/red]"
+            )
             return
         output_path = input_path
     else:
-        output_path = Path(output) if output else input_path / 'optimized'
+        output_path = Path(output) if output else input_path / "optimized"
 
     if not dry_run and not in_place:
         output_path.mkdir(parents=True, exist_ok=True)
@@ -155,19 +177,19 @@ def optimize(
     )
     image_files = []
     extensions = [
-        '*.png',
-        '*.PNG',
-        '*.jpg',
-        '*.JPG',
-        '*.jpeg',
-        '*.JPEG',
-        '*.webp',
-        '*.WEBP',
+        "*.png",
+        "*.PNG",
+        "*.jpg",
+        "*.JPG",
+        "*.jpeg",
+        "*.JPEG",
+        "*.webp",
+        "*.WEBP",
     ]
 
     for ext in extensions:
         if recursive:
-            pattern = f'**/{ext}'
+            pattern = f"**/{ext}"
         else:
             pattern = ext
         found = input_path.glob(pattern)
@@ -175,28 +197,34 @@ def optimize(
         image_files.extend([f for f in found if not should_skip(f, skip_patterns)])
 
     if not image_files:
-        console.print('[yellow]No image files found.[/yellow]')
+        console.print("[yellow]No image files found.[/yellow]")
         return
 
-    console.print(f'[cyan]Found {len(image_files)} images to process[/cyan]')
+    console.print(f"[cyan]Found {len(image_files)} images to process[/cyan]")
     if dry_run:
-        console.print('[yellow]DRY RUN MODE - No files will be saved[/yellow]\n')
+        console.print("[yellow]DRY RUN MODE - No files will be saved[/yellow]\n")
     if in_place:
-        console.print('[yellow]IN-PLACE MODE - Original files will be overwritten[/yellow]\n')
+        console.print(
+            "[yellow]IN-PLACE MODE - Original files will be overwritten[/yellow]\n"
+        )
     if workers > 1:
-        console.print(f'[cyan]Using {workers} parallel workers[/cyan]\n')
+        console.print(f"[cyan]Using {workers} parallel workers[/cyan]\n")
 
     results = optimizer.process_batch(image_files, output_path, input_path, dry_run)
-    
-    total_original = sum(r['original_size'] for r in results)
-    total_optimized = sum(r['optimized_size'] for r in results)
-    total_saved = total_original - total_optimized
-    
-    console.print(f'\n[bold green]Summary:[/bold green]')
-    console.print(f'Processed: {len(results)} images')
-    console.print(f'Total original size: {format_size(total_original)}')
-    console.print(f'Total optimized size: {format_size(total_optimized)}')
-    console.print(f'Total saved: {format_size(total_saved)} ({calculate_savings(total_original, total_optimized):.1f}%)')
 
-if __name__ == '__main__':
+    total_original = sum(r["original_size"] for r in results)
+    total_optimized = sum(r["optimized_size"] for r in results)
+    total_saved = total_original - total_optimized
+
+    console.print(f"\n[bold green]Summary:[/bold green]")
+    console.print(f"Processed: {len(results)} images")
+    console.print(f"Total original size: {format_size(total_original)}")
+    console.print(f"Total optimized size: {format_size(total_optimized)}")
+    console.print(
+        f"Total saved: {format_size(total_saved)} "
+        f"({calculate_savings(total_original, total_optimized):.1f}%)"
+    )
+
+
+if __name__ == "__main__":
     optimize()

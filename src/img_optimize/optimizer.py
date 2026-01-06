@@ -107,12 +107,12 @@ class ImageOptimizer:
                 img_format = img.format
                 if not img_format:
                     ext = input_path.suffix.lower()
-                    if ext in ['.webp']:
-                        img_format = 'WEBP'
-                    elif ext in ['.png']:
-                        img_format = 'PNG'
-                    elif ext in ['.jpg', '.jpeg']:
-                        img_format = 'JPEG'
+                    if ext in [".webp"]:
+                        img_format = "WEBP"
+                    elif ext in [".png"]:
+                        img_format = "PNG"
+                    elif ext in [".jpg", ".jpeg"]:
+                        img_format = "JPEG"
 
                 if img_format not in SUPPORTED_FORMATS:
                     logger.warning(
@@ -125,29 +125,33 @@ class ImageOptimizer:
 
                 buffer = io.BytesIO()
 
-                if img_format == 'PNG':
-                    img.save(buffer, format='PNG', optimize=True)
-                elif img_format == 'WEBP':
-                    img.save(buffer, format='WEBP', quality=self.quality, method=6)
+                if img_format == "PNG":
+                    img.save(buffer, format="PNG", optimize=True)
+                elif img_format == "WEBP":
+                    img.save(buffer, format="WEBP", quality=self.quality, method=6)
                 else:  # JPEG or MPO
-                    exif = img.info.get('exif', b'')
-                    if img.mode in ('RGBA', 'LA', 'P'):
-                        img = img.convert('RGB')
+                    exif = img.info.get("exif", b"")
+                    if img.mode in ("RGBA", "LA", "P"):
+                        img = img.convert("RGB")
                     img.save(
-                        buffer, format='JPEG', quality=self.quality, optimize=True, exif=exif
+                        buffer,
+                        format="JPEG",
+                        quality=self.quality,
+                        optimize=True,
+                        exif=exif,
                     )
 
                 optimized_size = buffer.tell()
 
                 if optimized_size >= original_size:
                     console.print(
-                        f'[yellow]Skipped {input_path.name} (would increase size)[/yellow]'
+                        f"[yellow]Skipped {input_path.name} (would increase size)[/yellow]"
                     )
                     return None
 
                 if not dry_run:
                     output_path.parent.mkdir(parents=True, exist_ok=True)
-                    with open(output_path, 'wb') as f:
+                    with open(output_path, "wb") as f:
                         f.write(buffer.getvalue())
 
                     stats = input_path.stat()
@@ -156,19 +160,19 @@ class ImageOptimizer:
 
                 savings = calculate_savings(original_size, optimized_size)
                 console.print(
-                    f'[green]✓[/green] {input_path.name}: '
-                    f'{format_size(original_size)} → {format_size(optimized_size)} '
-                    f'({savings:.1f}% saved)'
+                    f"[green]✓[/green] {input_path.name}: "
+                    f"{format_size(original_size)} → {format_size(optimized_size)} "
+                    f"({savings:.1f}% saved)"
                 )
 
                 return {
-                    'path': input_path,
-                    'original_size': original_size,
-                    'optimized_size': optimized_size
+                    "path": input_path,
+                    "original_size": original_size,
+                    "optimized_size": optimized_size,
                 }
 
         except Exception as e:
-            console.print(f'[red]✗[/red] {input_path.name}: {str(e)}')
+            console.print(f"[red]✗[/red] {input_path.name}: {str(e)}")
             logger.error(f"Error optimizing {input_path}: {e}", exc_info=True)
             return None
     
@@ -207,14 +211,14 @@ class ImageOptimizer:
                 for future in track(
                     as_completed(futures),
                     total=len(futures),
-                    description='Optimizing images...'
+                    description="Optimizing images...",
                 ):
                     result = future.result()
                     if result:
                         results.append(result)
         else:
             # Sequential processing
-            for img_path in track(image_files, description='Optimizing images...'):
+            for img_path in track(image_files, description="Optimizing images..."):
                 rel_path = img_path.relative_to(input_dir)
                 output_path = output_dir / rel_path
 

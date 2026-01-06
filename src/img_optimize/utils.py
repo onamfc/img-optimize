@@ -3,7 +3,7 @@ from typing import List, Union
 
 # Constants
 BYTES_PER_KB: int = 1024
-SIZE_UNITS: List[str] = ['B', 'KB', 'MB', 'GB', 'TB']
+SIZE_UNITS: List[str] = ["B", "KB", "MB", "GB", "TB"]
 
 
 def format_size(bytes_size: Union[int, float]) -> str:
